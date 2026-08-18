@@ -57,7 +57,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
 
   # Supabase (backup provider, optional)
-  supabase_flutter: ^2.14.2
+  #supabase_flutter: ^2.14.2
 
 dev_dependencies:
   flutter_test:
@@ -72,7 +72,7 @@ flutter:
   generate: true
 
 
-dependency_overrides:
-  app_links: ^6.4.0
+#dependency_overrides:
+  #app_links: ^6.4.0
   # إذا استمرت المشكلة، جرب هذا أيضاً
   # app_links_platform_interface: ^2.0.0
