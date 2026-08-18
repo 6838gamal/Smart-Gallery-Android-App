@@ -34,7 +34,7 @@ class SecurityService {
   }
 
   Future<void> setBiometric(bool enabled) async {
-    await _storage.write(key: _keyBiometricEnabled, enabled ? '1' : '0');
+    await _storage.write(key: _keyBiometricEnabled, value: enabled ? '1' : '0');
   }
 
   Future<void> setPassword(String password) async {
