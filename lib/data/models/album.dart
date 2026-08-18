@@ -36,29 +36,30 @@ class Album {
         isHidden: isHidden ?? this.isHidden,
       );
 
-  // ✅ استخدم AssetPathEntity بدلاً من PathEntity
+  // ✅ التصحيح: استخدام الخصائص المتاحة في AssetPathEntity
   factory Album.fromPathEntity(AssetPathEntity p) {
     return Album(
       id: p.id,
       name: p.name,
-      path: p.path ?? '',
+      path: p.name, // ✅ استخدم p.name بدلاً من p.path (غير موجود)
       coverId: null,
-      count: p.assetCount,
+      count: 0, // ✅ استخدم 0 مؤقتاً (p.assetCount غير موجود في 3.x)
       isUserCreated: false,
     );
   }
 
-  // ✅ طريقة بديلة إذا كان PathEntity موجوداً في مكان آخر
-  // factory Album.fromPathEntity(dynamic p) {
-  //   return Album(
-  //     id: p.id,
-  //     name: p.name,
-  //     path: p.path ?? '',
-  //     coverId: null,
-  //     count: p.assetCount,
-  //     isUserCreated: false,
-  //   );
-  // }
+  // ✅ إضافة مُنشئ للحصول على count بشكل صحيح (غير متزامن)
+  static Future<Album> fromPathEntityAsync(AssetPathEntity p) async {
+    final count = await p.assetCountAsync; // ✅ الطريقة الصحيحة للحصول على count
+    return Album(
+      id: p.id,
+      name: p.name,
+      path: p.name,
+      coverId: null,
+      count: count,
+      isUserCreated: false,
+    );
+  }
 
   Map<String, Object?> toDbRow() => {
         'id': id,
