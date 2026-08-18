@@ -6,7 +6,7 @@ class Album {
     required this.id,
     required this.name,
     required this.path,
-    required this.coverId,
+    this.coverId,
     required this.count,
     this.isUserCreated = false,
     this.isHidden = false,
@@ -20,7 +20,12 @@ class Album {
   final bool isUserCreated;
   final bool isHidden;
 
-  Album copyWith({String? name, bool? isHidden, int? count, String? coverId}) =>
+  Album copyWith({
+    String? name,
+    bool? isHidden,
+    int? count,
+    String? coverId,
+  }) =>
       Album(
         id: id,
         name: name ?? this.name,
@@ -31,7 +36,8 @@ class Album {
         isHidden: isHidden ?? this.isHidden,
       );
 
-  factory Album.fromPathEntity(PathEntity p) {
+  // ✅ استخدم AssetPathEntity بدلاً من PathEntity
+  factory Album.fromPathEntity(AssetPathEntity p) {
     return Album(
       id: p.id,
       name: p.name,
@@ -41,6 +47,18 @@ class Album {
       isUserCreated: false,
     );
   }
+
+  // ✅ طريقة بديلة إذا كان PathEntity موجوداً في مكان آخر
+  // factory Album.fromPathEntity(dynamic p) {
+  //   return Album(
+  //     id: p.id,
+  //     name: p.name,
+  //     path: p.path ?? '',
+  //     coverId: null,
+  //     count: p.assetCount,
+  //     isUserCreated: false,
+  //   );
+  // }
 
   Map<String, Object?> toDbRow() => {
         'id': id,
