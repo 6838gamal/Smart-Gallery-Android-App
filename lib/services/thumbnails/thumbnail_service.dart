@@ -5,7 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import '../core/constants/app_constants.dart';
+import '../../core/constants/app_constants.dart';
 
 /// On-disk thumbnail cache keyed by asset id. Avoids re-decoding full images.
 class ThumbnailService {

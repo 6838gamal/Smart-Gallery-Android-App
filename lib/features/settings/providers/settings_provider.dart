@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../core/permissions/permission_service.dart';
+import '../../../core/permissions/permission_service.dart';
 
 /// Persisted user preferences: theme mode + locale.
 class SettingsState {

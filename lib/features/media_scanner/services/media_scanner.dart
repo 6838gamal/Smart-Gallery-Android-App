@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/datasources/media_data_source.dart';
-import '../../data/models/media_item.dart';
-import '../../services/media/media_service.dart';
+import '../../../data/datasources/media_data_source.dart';
+import '../../../data/models/media_item.dart';
+import '../../../services/media/media_service.dart';
 
 /// Incremental MediaStore scanner. It upserts only newly-seen rows and marks
 /// rows that disappeared from MediaStore as trashed — no full re-index each
