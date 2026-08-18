@@ -1,6 +1,9 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 
-import '../database/app_database.dart';
 import '../models/media_item.dart';
 
 /// CRUD for the `media` table. App-only flags (favorite, hidden, trash) are
@@ -9,7 +12,62 @@ class MediaDataSource {
   MediaDataSource._();
   static final MediaDataSource instance = MediaDataSource._();
 
-  Future<Database> get _db => AppDatabase.instance.database;
+  Database? _database;
+
+  Future<Database> get _db async {
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
+  }
+
+  Future<Database> _initDatabase() async {
+    if (kIsWeb) {
+      // ✅ على الويب: استخدم قاعدة بيانات في الذاكرة
+      return await openDatabase(
+        'memory.db',
+        inMemory: true,
+        onCreate: (db, version) {
+          return _createTables(db);
+        },
+        version: 1,
+      );
+    } else {
+      // ✅ على الأجهزة المحمولة: استخدم مسار المستندات
+      final directory = await getApplicationDocumentsDirectory();
+      final path = join(directory.path, 'media.db');
+      return await openDatabase(
+        path,
+        onCreate: (db, version) {
+          return _createTables(db);
+        },
+        version: 1,
+      );
+    }
+  }
+
+  Future<void> _createTables(Database db) async {
+    await db.execute('''
+      CREATE TABLE media(
+        id TEXT PRIMARY KEY,
+        path TEXT,
+        display_name TEXT,
+        album_id TEXT,
+        album_name TEXT,
+        type TEXT,
+        size_bytes INTEGER,
+        created_at INTEGER,
+        modified_at INTEGER,
+        duration_ms INTEGER,
+        width INTEGER,
+        height INTEGER,
+        is_favorite INTEGER DEFAULT 0,
+        is_hidden INTEGER DEFAULT 0,
+        trashed_at INTEGER,
+        ai_tags TEXT,
+        last_seen_scan INTEGER
+      )
+    ''');
+  }
 
   /// Upserts scan-derived columns, preserving favorite/hidden/trash/ai_tags.
   Future<void> upsertScanRow(MediaItem m, int scanVersion) async {
