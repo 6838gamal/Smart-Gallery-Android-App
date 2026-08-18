@@ -99,7 +99,7 @@ class _EditorBody extends ConsumerWidget {
             ListTile(
               title: Text(filter.name),
               leading: Icon(state.activeFilter == filter ? Icons.check : null),
-              onTap: () => Navigator.pop(filter),
+              onTap: () => Navigator.pop(context,filter),
             ),
         ],
       ),
