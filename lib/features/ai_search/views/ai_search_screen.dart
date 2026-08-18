@@ -63,7 +63,7 @@ class _Suggestions extends StatelessWidget {
             for (final s in suggestions)
               ActionChip(
                 label: Text(s),
-                avatar: const Icon(Icons.auto_awesome_outline, size: 18),
+                avatar: const Icon(Icons.auto_awesome, size: 18),
                 onPressed: () => ref.read(aiSearchControllerProvider.notifier).search(s),
               ),
             Text(l.aiSearchHint, style: const TextStyle(color: AppColors.neutral600)),
