@@ -68,7 +68,7 @@ class MediaViewerScreen extends ConsumerWidget {
 
 class _Body extends StatefulWidget {
   const _Body({required this.item});
-  final dynamic item;
+  final dynamic item; // يمكن تحسينه لاحقاً باستخدام نوع مخصص
   @override
   State<_Body> createState() => _BodyState();
 }
@@ -80,23 +80,28 @@ class _BodyState extends State<_Body> {
   @override
   void initState() {
     super.initState();
-    if (widget.item.isVideo) {
+    // تحقق مما إذا كان العنصر فيديو قبل تهيئته
+    if (widget.item.isVideo == true) {
       _initVideo();
     }
     _tc = TransformationController();
   }
 
   Future<void> _initVideo() async {
-    final asset = await AssetEntity.fromId(widget.item.id);
-    final file = await asset?.file;
-    if (file != null && mounted) {
-      _video = VideoPlayerController.file(File(file.path));
-      await _video!.initialize();
-      if (mounted) {
-        _video!.setLooping(true);
-        _video!.play();
-        setState(() {});
+    try {
+      final asset = await AssetEntity.fromId(widget.item.id);
+      final file = await asset?.file;
+      if (file != null && mounted) {
+        _video = VideoPlayerController.file(File(file.path));
+        await _video!.initialize();
+        if (mounted) {
+          _video!.setLooping(true);
+          _video!.play();
+          setState(() {});
+        }
       }
+    } catch (e) {
+      print('Error initializing video: $e');
     }
   }
 
@@ -110,30 +115,84 @@ class _BodyState extends State<_Body> {
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
-    return PageView(
-      children: [
-        if (item.isVideo)
-          _video != null && _video!.value.isInitialized
-              ? Center(child: AspectRatio(aspectRatio: _video!.value.aspectRatio, child: VideoPlayer(_video!)))
+    
+    // فصل الأجزاء إلى قائمة
+    final List<Widget> pages = [];
+    
+    // إضافة صفحة العرض الرئيسية
+    pages.add(
+      item.isVideo == true
+          ? _video != null && _video!.value.isInitialized
+              ? Center(
+                  child: AspectRatio(
+                    aspectRatio: _video!.value.aspectRatio,
+                    child: VideoPlayer(_video!),
+                  ),
+                )
               : const Center(child: CircularProgressIndicator())
-          else
-            InteractiveViewer(
+          : InteractiveViewer(
               transformationController: _tc,
-              maxScale: 5,
-              child: Center(child: _image(item)),
-        _Details(item: item),
-      ],
+              maxScale: 5.0,
+              minScale: 0.5,
+              child: Center(
+                child: _ImageWidget(item: item),
+              ),
+            ),
+    );
+    
+    // إضافة صفحة التفاصيل
+    pages.add(
+      _Details(item: item),
+    );
+    
+    return PageView(
+      children: pages,
     );
   }
+}
 
-  Widget _image(dynamic item) {
+// فصل widget الصورة إلى Class منفصل
+class _ImageWidget extends StatefulWidget {
+  const _ImageWidget({required this.item});
+  final dynamic item;
+
+  @override
+  State<_ImageWidget> createState() => _ImageWidgetState();
+}
+
+class _ImageWidgetState extends State<_ImageWidget> {
+  Future<File?>? _fileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _fileFuture = AssetEntity.fromId(widget.item.id).then((a) => a?.file);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return FutureBuilder<File?>(
-      future: AssetEntity.fromId(item.id).then((a) => a?.file),
-      builder: (context, snap) {
-        if (snap.connectionState != ConnectionState.done || snap.data == null) {
+      future: _fileFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
           return const CircularProgressIndicator(color: Colors.white);
         }
-        return Image.file(snap.data!, fit: BoxFit.contain);
+        if (snapshot.data == null) {
+          return const Text(
+            'Failed to load image',
+            style: TextStyle(color: Colors.white),
+          );
+        }
+        return Image.file(
+          snapshot.data!,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return const Text(
+              'Error loading image',
+              style: TextStyle(color: Colors.white),
+            );
+          },
+        );
       },
     );
   }
@@ -142,33 +201,82 @@ class _BodyState extends State<_Body> {
 class _Details extends StatelessWidget {
   const _Details({required this.item});
   final dynamic item;
+
   @override
   Widget build(BuildContext context) {
     final l = context.l;
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text(l.details, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600)),
+        Text(
+          l.details,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 16),
-        _row('Name', item.displayName as String),
-        _row('Album', item.albumName as String),
-        _row('Type', item.type.name.toUpperCase()),
-        _row('Size', FileFormatters.bytes(item.sizeBytes as int)),
-        _row('Date', DateFormatters.fullDate(item.createdAt as DateTime)),
-        if (item.isVideo) _row('Duration', FileFormatters.duration(item.duration as Duration)),
-        if (item.width != null) _row('Dimensions', '${item.width} x ${item.height}'),
-        if (item.aiTags.isNotEmpty as bool) _row('AI tags', (item.aiTags as List).join(', ')),
+        _row('Name', item.displayName?.toString() ?? 'Unknown'),
+        _row('Album', item.albumName?.toString() ?? 'Unknown'),
+        _row('Type', item.type?.name?.toUpperCase() ?? 'Unknown'),
+        _row('Size', _formatBytes(item.sizeBytes)),
+        _row('Date', _formatDate(item.createdAt)),
+        if (item.isVideo == true) 
+          _row('Duration', _formatDuration(item.duration)),
+        if (item.width != null) 
+          _row('Dimensions', '${item.width} x ${item.height}'),
+        if (item.aiTags?.isNotEmpty == true) 
+          _row('AI tags', (item.aiTags as List).join(', ')),
       ],
     );
   }
 
-  Widget _row(String k, String v) => Padding(
+  String _formatBytes(dynamic bytes) {
+    if (bytes == null) return 'Unknown';
+    try {
+      return FileFormatters.bytes(bytes as int);
+    } catch (e) {
+      return 'Unknown';
+    }
+  }
+
+  String _formatDate(dynamic date) {
+    if (date == null) return 'Unknown';
+    try {
+      return DateFormatters.fullDate(date as DateTime);
+    } catch (e) {
+      return 'Unknown';
+    }
+  }
+
+  String _formatDuration(dynamic duration) {
+    if (duration == null) return 'Unknown';
+    try {
+      return FileFormatters.duration(duration as Duration);
+    } catch (e) {
+      return 'Unknown';
+    }
+  }
+
+  Widget _row(String key, String value) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(width: 100, child: Text(k, style: const TextStyle(color: Colors.white70))),
-            Expanded(child: Text(v, style: const TextStyle(color: Colors.white))),
+            SizedBox(
+              width: 100,
+              child: Text(
+                key,
+                style: const TextStyle(color: Colors.white70),
+              ),
+            ),
+            Expanded(
+              child: Text(
+                value,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
           ],
         ),
       );
