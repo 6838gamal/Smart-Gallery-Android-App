@@ -20,7 +20,7 @@ import 'app_router_notifier.dart';
 /// Central GoRouter. The shell route hosts the bottom nav (Gallery / Albums /
 /// Search / AI / Settings). A redirect to `/unlock` enforces the app lock when
 /// the user has configured one.
-GoRouter buildRouter(Ref ref) {
+GoRouter buildRouter(WidgetRef ref) {
   final notifier = ref.read(routerNotifierProvider.notifier);
   return GoRouter(
     initialLocation: '/gallery',
