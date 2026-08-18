@@ -23,7 +23,8 @@ dependencies:
 
   # Local database
   sqflite: ^2.3.3+1
-  sqflite_common_ffi: ^2.3.3+1  # ✅ للويب
+  sqflite_common_ffi: ^2.3.3+1
+  sqflite_common_ffi_web: ^2.3.3+1  # ✅ للويب
   path: ^1.9.0
   path_provider: ^2.1.3
 
