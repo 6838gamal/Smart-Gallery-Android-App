@@ -23,13 +23,13 @@ class MediaDataSource {
   Future<Database> _initDatabase() async {
     if (kIsWeb) {
       // ✅ على الويب: استخدم قاعدة بيانات في الذاكرة
+      // في sqflite، استخدم مسار ':memory:' لقاعدة بيانات في الذاكرة
       return await openDatabase(
-        'memory.db',
-        inMemory: true,
+        ':memory:',
+        version: 1,
         onCreate: (db, version) {
           return _createTables(db);
         },
-        version: 1,
       );
     } else {
       // ✅ على الأجهزة المحمولة: استخدم مسار المستندات
@@ -37,10 +37,10 @@ class MediaDataSource {
       final path = join(directory.path, 'media.db');
       return await openDatabase(
         path,
+        version: 1,
         onCreate: (db, version) {
           return _createTables(db);
         },
-        version: 1,
       );
     }
   }
