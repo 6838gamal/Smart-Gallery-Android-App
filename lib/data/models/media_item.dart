@@ -73,18 +73,37 @@ class MediaItem {
         aiTags: aiTags ?? this.aiTags,
       );
 
+  // ✅ إصلاح: إزالة asset.albumId واستخدام قيمة افتراضية
   factory MediaItem.fromAsset(AssetEntity asset, String albumName) {
     return MediaItem(
       id: asset.id,
       path: asset.relativePath ?? '',
       displayName: asset.title ?? asset.id,
-      albumId: asset.albumId ?? '',
+      albumId: '', // ⚠️ albumId غير موجود في AssetEntity في الإصدار 3.x
       albumName: albumName,
+      type: _mapType(asset.type),
+      sizeBytes: asset.size, // ✅ هذا يعمل (int)
+      createdAt: asset.createDateTime,
+      modifiedAt: asset.modifiedDateTime,
+      duration: asset.videoDuration ?? Duration.zero,
+      width: asset.width,
+      height: asset.height,
+    );
+  }
+
+  // ✅ إضافة مُنشئ بديل من AssetEntity بدون albumName
+  factory MediaItem.fromAssetEntity(AssetEntity asset) {
+    return MediaItem(
+      id: asset.id,
+      path: asset.relativePath ?? '',
+      displayName: asset.title ?? asset.id,
+      albumId: '', // قيمة افتراضية
+      albumName: '', // قيمة افتراضية
       type: _mapType(asset.type),
       sizeBytes: asset.size,
       createdAt: asset.createDateTime,
       modifiedAt: asset.modifiedDateTime,
-      duration: asset.videoDuration,
+      duration: asset.videoDuration ?? Duration.zero,
       width: asset.width,
       height: asset.height,
     );
