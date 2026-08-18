@@ -95,7 +95,7 @@ class AppTheme {
         side: BorderSide(color: scheme.outlineVariant),
       ),
       // ✅ إصلاح: استخدام CardThemeData بدلاً من CardTheme
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 0,
         margin: EdgeInsets.zero,
