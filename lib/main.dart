@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';  // ✅ أضف هذه
 
 import 'app/localization/app_localizations.dart';
 import 'app/routes/app_router.dart';
@@ -14,8 +15,12 @@ import 'features/settings/providers/settings_provider.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // ✅ تهيئة sqflite للويب (يجب أن تكون قبل أي استخدام لقاعدة البيانات)
+  // ✅ تهيئة sqflite للويب
   if (kIsWeb) {
+    sqfliteFfiWebInit();  // ✅ استخدم هذه للويب
+    databaseFactory = databaseFactoryFfiWeb;  // ✅ استخدم هذه للويب
+  } else {
+    // ✅ للموبايل
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
