@@ -36,7 +36,7 @@ class EditorController extends FamilyAsyncNotifier<EditorState, String> {
   void applyFilter(EditorFilter f) {
     final cur = state.valueOrNull;
     if (cur == null) return;
-    final next = EditorService.instance.applyFilter(cur.original, null, filter: f);
+    final next = EditorService.instance.applyFilter(cur.original, f);
     state = AsyncData(cur.copyWith(current: next, activeFilter: f));
   }
 
