@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'app/localization/app_localizations.dart';
 import 'app/routes/app_router.dart';
@@ -10,6 +13,13 @@ import 'features/settings/providers/settings_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // ✅ تهيئة sqflite للويب (يجب أن تكون قبل أي استخدام لقاعدة البيانات)
+  if (kIsWeb) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+  
   AppLogger.init();
   runApp(const ProviderScope(child: SmartGalleryApp()));
 }
@@ -21,7 +31,7 @@ class SmartGalleryApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     
-    // ✅ تحسين: استخدام WidgetRef مباشرة دون تحويل
+    // ✅ استخدام WidgetRef مباشرة دون تحويل
     final router = buildRouter(ref);
     
     return MaterialApp.router(
