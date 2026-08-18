@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../data/models/album.dart';
@@ -37,16 +38,86 @@ class MediaService {
     return list.first.getAssetListPaged(page: page, size: limit);
   }
 
+  // ✅ إصلاح: إزالة asset.albumId واستخدام طريقة بديلة
   Future<MediaItem> toMediaItem(AssetEntity asset) async {
-    final album = asset.albumId == null
-        ? null
-        : await AssetPathEntity.fromId(asset.albumId!);
-    return MediaItem.fromAsset(asset, album?.name ?? '');
+    // ✅ الحصول على albumId من خلال البحث في الألبومات
+    final albumId = await _getAlbumIdForAsset(asset);
+    final albumName = await _getAlbumNameForAsset(asset);
+    return MediaItem.fromAsset(asset, albumName);
+  }
+
+  // ✅ إضافة دالة مساعدة للحصول على albumId
+  Future<String?> _getAlbumIdForAsset(AssetEntity asset) async {
+    try {
+      final albums = await PhotoManager.getAssetPathList(
+        type: RequestType.common,
+      );
+      for (var album in albums) {
+        final assets = await album.getAssetListPaged(page: 0, size: 50);
+        if (assets.any((a) => a.id == asset.id)) {
+          return album.id;
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ✅ إضافة دالة مساعدة للحصول على albumName
+  Future<String> _getAlbumNameForAsset(AssetEntity asset) async {
+    try {
+      final albums = await PhotoManager.getAssetPathList(
+        type: RequestType.common,
+      );
+      for (var album in albums) {
+        final assets = await album.getAssetListPaged(page: 0, size: 50);
+        if (assets.any((a) => a.id == asset.id)) {
+          return album.name;
+        }
+      }
+      return '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  // ✅ إصلاح: تنفيذ دالة thumbnailFile بشكل صحيح
+  Future<File?> thumbnailFile(AssetEntity asset) async {
+    try {
+      final data = await asset.thumbnailDataWithSize(
+        const ThumbnailSize.square(256),
+      );
+      if (data == null) return null;
+      
+      // حفظ البيانات في ملف مؤقت
+      final tempDir = await Directory.systemTemp.createTemp('thumbnails');
+      final file = File('${tempDir.path}/${asset.id}.jpg');
+      await file.writeAsBytes(data);
+      return file;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ✅ إضافة دالة للحصول على thumbnail كـ Uint8List
+  Future<Uint8List?> thumbnailBytes(AssetEntity asset) async {
+    try {
+      return await asset.thumbnailDataWithSize(
+        const ThumbnailSize.square(256),
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> deleteAssets(List<String> ids) async {
-    final assets = await Future.wait(ids.map((id) => AssetEntity.fromId(id)));
-    await PhotoManager.editor.deleteWithIds(assets.whereType<AssetEntity>().map((a) => a.id).toList());
+    final assets = await Future.wait(
+      ids.map((id) => AssetEntity.fromId(id)),
+    );
+    await PhotoManager.editor.deleteWithIds(
+      assets.whereType<AssetEntity>().map((a) => a.id).toList(),
+    );
   }
 
   Future<AssetEntity?> assetById(String id) async {
@@ -57,5 +128,22 @@ class MediaService {
     }
   }
 
-  Future<File?> thumbnailFile(AssetEntity asset) => asset.thumbnailDataWithSize(const ThumbnailSize.square(256)).then((d) => d == null ? null : null);
+  // ✅ إضافة دالة للحصول على مسار الملف
+  Future<String?> getAssetPath(AssetEntity asset) async {
+    try {
+      final file = await asset.file;
+      return file?.path;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ✅ إضافة دالة للحصول على الملف
+  Future<File?> getAssetFile(AssetEntity asset) async {
+    try {
+      return await asset.file;
+    } catch (e) {
+      return null;
+    }
+  }
 }
