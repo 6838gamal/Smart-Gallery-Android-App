@@ -73,6 +73,6 @@ flutter:
 
 
 dependency_overrides:
-  app_links: ^6.0.0
+  app_links: ^6.4.0
   # إذا استمرت المشكلة، جرب هذا أيضاً
   # app_links_platform_interface: ^2.0.0
