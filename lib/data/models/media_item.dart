@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:photo_manager/photo_manager.dart';
 
 /// Media type classification.
@@ -73,20 +74,15 @@ class MediaItem {
         aiTags: aiTags ?? this.aiTags,
       );
 
-  // ✅ إصلاح: إزالة asset.albumId واستخدام قيمة افتراضية
   factory MediaItem.fromAsset(AssetEntity asset, String albumName) {
     return MediaItem(
       id: asset.id,
       path: asset.relativePath ?? '',
       displayName: asset.title ?? asset.id,
-      albumId: '', // ⚠️ albumId غير موجود في AssetEntity في الإصدار 3.x
+      albumId: '',
       albumName: albumName,
       type: _mapType(asset.type),
-      sizeBytes: asset.size is int 
-    ? asset.size 
-    : (asset.size is Size 
-        ? (asset.size as Size).width.toInt() 
-        : 0),
+      sizeBytes: asset.size,
       createdAt: asset.createDateTime,
       modifiedAt: asset.modifiedDateTime,
       duration: asset.videoDuration ?? Duration.zero,
@@ -95,20 +91,15 @@ class MediaItem {
     );
   }
 
-  // ✅ إضافة مُنشئ بديل من AssetEntity بدون albumName
   factory MediaItem.fromAssetEntity(AssetEntity asset) {
     return MediaItem(
       id: asset.id,
       path: asset.relativePath ?? '',
       displayName: asset.title ?? asset.id,
-      albumId: '', // قيمة افتراضية
-      albumName: '', // قيمة افتراضية
+      albumId: '',
+      albumName: '',
       type: _mapType(asset.type),
-      sizeBytes: asset.size is int 
-    ? asset.size 
-    : (asset.size is Size 
-        ? (asset.size as Size).width.toInt() 
-        : 0),
+      sizeBytes: asset.size,
       createdAt: asset.createDateTime,
       modifiedAt: asset.modifiedDateTime,
       duration: asset.videoDuration ?? Duration.zero,
