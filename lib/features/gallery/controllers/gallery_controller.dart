@@ -13,7 +13,9 @@ class GalleryController extends Notifier<GalleryState> {
 
   @override
   GalleryState build() {
-    ref.listen(sortProvider, (_) => _reset());
+    ref.listen<SortState>(sortProvider, (previous, next) {
+  _reset();
+});
     // Initial load happens lazily on first read.
     Future.microtask(loadFirst);
     return const GalleryState();
