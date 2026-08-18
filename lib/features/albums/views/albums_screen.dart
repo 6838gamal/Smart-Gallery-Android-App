@@ -138,17 +138,17 @@ class _AlbumCard extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.edit_outlined),
             title: Text(l.rename),
-            onTap: () => Navigator.pop('rename'),
+            onTap: () => Navigator.pop(context,'rename'),
           ),
           ListTile(
             leading: Icon(album.isHidden ? Icons.visibility : Icons.visibility_off),
             title: Text(album.isHidden ? l.unhide : l.hide),
-            onTap: () => Navigator.pop('toggleHidden'),
+            onTap: () => Navigator.pop(context,'toggleHidden'),
           ),
           ListTile(
             leading: const Icon(Icons.delete_outline, color: AppColors.error),
             title: Text(l.delete),
-            onTap: () => Navigator.pop('delete'),
+            onTap: () => Navigator.pop(context,'delete'),
           ),
         ],
       ),
