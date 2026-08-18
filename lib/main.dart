@@ -20,7 +20,7 @@ class SmartGalleryApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
-    final router = buildRouter(ref);
+    final router = buildRouter(ref as Ref);
     return MaterialApp.router(
       title: 'Smart Gallery',
       debugShowCheckedModeBanner: false,
