@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/constants/app_colors.dart';
+import 'core/constants/app_colors.dart';
 
 /// Material 3 theme built from [AppColors]. Light + dark variants.
 class AppTheme {
