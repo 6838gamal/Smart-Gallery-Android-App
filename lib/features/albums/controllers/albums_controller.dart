@@ -5,7 +5,7 @@ import '../../../data/datasources/media_data_source.dart';
 import '../../../data/models/album.dart';
 import '../../../services/media/media_service.dart';
 // ✅ أضف هذا الاستيراد في أعلى الملف:
-import '../../data/models/media_item.dart';
+import '../../../data/models/media_item.dart';
 
 class AlbumsController extends Notifier<AlbumsState> {
   @override
