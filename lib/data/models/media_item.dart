@@ -82,7 +82,7 @@ class MediaItem {
       albumId: '', // ⚠️ albumId غير موجود في AssetEntity في الإصدار 3.x
       albumName: albumName,
       type: _mapType(asset.type),
-      sizeBytes: asset.size, // ✅ هذا يعمل (int)
+      sizeBytes: asset.size is int ? asset.size : 0,
       createdAt: asset.createDateTime,
       modifiedAt: asset.modifiedDateTime,
       duration: asset.videoDuration ?? Duration.zero,
@@ -100,7 +100,7 @@ class MediaItem {
       albumId: '', // قيمة افتراضية
       albumName: '', // قيمة افتراضية
       type: _mapType(asset.type),
-      sizeBytes: asset.size,
+      sizeBytes: asset.size is int ? asset.size : 0,
       createdAt: asset.createDateTime,
       modifiedAt: asset.modifiedDateTime,
       duration: asset.videoDuration ?? Duration.zero,
