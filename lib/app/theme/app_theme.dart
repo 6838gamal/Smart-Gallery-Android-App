@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_colors.dart'; // ✅ تأكد من صحة المسار
 
 /// Material 3 theme built from [AppColors]. Light + dark variants.
 class AppTheme {
@@ -94,7 +94,8 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         side: BorderSide(color: scheme.outlineVariant),
       ),
-      cardTheme: CardTheme(
+      // ✅ إصلاح: استخدام CardThemeData بدلاً من CardTheme
+      cardTheme: CardThemeData(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 0,
         margin: EdgeInsets.zero,
