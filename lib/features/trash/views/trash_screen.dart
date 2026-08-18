@@ -61,8 +61,8 @@ class TrashScreen extends ConsumerWidget {
       builder: (_) => AlertDialog(
         content: Text(msg),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(false), child: Text(context.l.cancel)),
-          TextButton(onPressed: () => Navigator.pop(true), child: Text(context.l.confirm)),
+          TextButton(onPressed: () => Navigator.pop(context,false), child: Text(context.l.cancel)),
+          TextButton(onPressed: () => Navigator.pop(context,true), child: Text(context.l.confirm)),
         ],
       ),
     );
@@ -79,12 +79,12 @@ class TrashScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.restore),
             title: Text(l.restore),
-            onTap: () => Navigator.pop('restore'),
+            onTap: () => Navigator.pop(context,'restore'),
           ),
           ListTile(
             leading: const Icon(Icons.delete_forever, color: AppColors.error),
             title: Text(l.deletePermanently),
-            onTap: () => Navigator.pop('delete'),
+            onTap: () => Navigator.pop(context,'delete'),
           ),
         ],
       ),
