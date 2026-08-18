@@ -10,6 +10,7 @@ import '../controllers/gallery_controller.dart';
 import '../providers/sort_provider.dart';
 import '../../../app/localization/app_localizations.dart';
 import '../../../shared/widgets/media_thumbnail.dart';
+import '../models/sort_field.dart';
 
 class GalleryScreen extends ConsumerWidget {
   const GalleryScreen({super.key});
