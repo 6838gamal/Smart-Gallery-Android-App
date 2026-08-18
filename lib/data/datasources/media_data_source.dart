@@ -21,28 +21,25 @@ class MediaDataSource {
   }
 
   Future<Database> _initDatabase() async {
+    String dbPath;
+    
     if (kIsWeb) {
-      // ✅ على الويب: استخدم قاعدة بيانات في الذاكرة
-      // في sqflite، استخدم مسار ':memory:' لقاعدة بيانات في الذاكرة
-      return await openDatabase(
-        ':memory:',
-        version: 1,
-        onCreate: (db, version) {
-          return _createTables(db);
-        },
-      );
+      // ✅ على الويب: استخدم مساراً مؤقتاً (يعمل على المتصفح)
+      // يمكنك استخدام أي مسار، sqflite سيتعامل معه كقاعدة بيانات في الذاكرة
+      dbPath = 'smart_gallery.db';
     } else {
       // ✅ على الأجهزة المحمولة: استخدم مسار المستندات
       final directory = await getApplicationDocumentsDirectory();
-      final path = join(directory.path, 'media.db');
-      return await openDatabase(
-        path,
-        version: 1,
-        onCreate: (db, version) {
-          return _createTables(db);
-        },
-      );
+      dbPath = join(directory.path, 'media.db');
     }
+    
+    return await openDatabase(
+      dbPath,
+      version: 1,
+      onCreate: (db, version) {
+        return _createTables(db);
+      },
+    );
   }
 
   Future<void> _createTables(Database db) async {
