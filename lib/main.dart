@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 import 'app/localization/app_localizations.dart';
 import 'app/routes/app_router.dart';
@@ -16,8 +17,8 @@ void main() {
   
   // ✅ تهيئة sqflite للويب
   if (kIsWeb) {
-    // الطريقة الصحيحة لتهيئة sqflite على الويب
-    databaseFactory = databaseFactoryFfi;
+    // استخدم databaseFactoryFfiWeb للويب
+    databaseFactory = databaseFactoryFfiWeb;
   } else {
     // للموبايل
     sqfliteFfiInit();
