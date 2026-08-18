@@ -1,5 +1,5 @@
 [build]
-  command= "flutter pub get && flutter pub run sqflite_common_ffi_web:setup && flutter build web --release"
+  command= "flutter build web --release"
   base    = "."
   publish = "build/web"
 
